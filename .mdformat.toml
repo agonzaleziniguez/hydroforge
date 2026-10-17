@@ -6,4 +6,5 @@ exclude = [
     ".ruff_cache/**",
     "build/**",
     "dist/**",
+    "local-only/**",
 ]

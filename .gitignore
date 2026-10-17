@@ -78,3 +78,6 @@ Desktop.ini
 *.bak
 *.tmp
 *.temp
+
+# Local notes, never committed
+local-only/
