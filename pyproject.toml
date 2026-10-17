@@ -70,10 +70,23 @@ select = [
     "D",   # pydocstyle
     "PTH", # prefer pathlib
     "PT",  # pytest style
+    "ERA", # commented-out code
+    "ARG", # unused arguments
+    # pydoclint: documented returns, yields, raises and parameters
+    "DOC102",
+    "DOC201",
+    "DOC202",
+    "DOC402",
+    "DOC403",
+    "DOC501",
+    "DOC502",
 ]
+# The DOC rules are in preview. Enable only the preview rules listed by code.
+preview = true
+explicit-preview-rules = true
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["D"]
+"tests/**" = ["D", "DOC"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
