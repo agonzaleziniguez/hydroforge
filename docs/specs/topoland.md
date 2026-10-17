@@ -36,6 +36,7 @@ Input data is often not clean. Layers overlap, edges almost match, and geometrie
 | Priority     | The order of the layers. Where layers overlap, the earlier layer wins.      |
 | Unclassified | The class of areas in the study area that no layer covers.                  |
 | Map units    | The units of the coordinate reference system (CRS), usually metres.         |
+| Coverage     | Polygons that do not overlap and share exact edges with their neighbours.   |
 
 ## 4. Inputs
 
@@ -71,7 +72,7 @@ These rules are always true for the output. Each rule has its own tests.
 
 | ID  | Rule                                                                                                                                                  |
 | --- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| G1  | **Full coverage.** The landcover covers the whole study area. There are no gaps.                                                                      |
+| G1  | **No gaps.** The landcover covers the whole study area. There are no gaps.                                                                            |
 | G2  | **No overlaps.** No two landcover polygons overlap.                                                                                                   |
 | G3  | **Priority.** Where layers overlap, the polygon gets the class of the earlier layer.                                                                  |
 | G4  | **Shared edges.** Neighbouring polygons have the same vertices along their common edge.                                                               |
