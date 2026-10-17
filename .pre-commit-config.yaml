@@ -1,0 +1,44 @@
+# Hooks run the tools pinned in uv.lock, using the settings in pyproject.toml.
+repos:
+  - repo: local
+    hooks:
+      - id: uv-lock
+        name: uv lock (check uv.lock matches pyproject.toml)
+        entry: uv lock --check
+        language: system
+        files: ^(pyproject\.toml|uv\.lock)$
+        pass_filenames: false
+
+      - id: ruff-check
+        name: ruff check
+        entry: uv run --frozen ruff check --fix --force-exclude
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+
+      - id: ruff-format
+        name: ruff format
+        entry: uv run --frozen ruff format --force-exclude
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+
+      - id: mdformat
+        name: mdformat
+        entry: uv run --frozen mdformat
+        language: system
+        types: [markdown]
+
+      - id: basedpyright
+        name: basedpyright
+        entry: uv run --frozen basedpyright
+        language: system
+        types_or: [python, pyi]
+        pass_filenames: false
+
+      - id: pytest
+        name: pytest
+        entry: uv run --frozen pytest -q
+        language: system
+        types_or: [python, pyi]
+        pass_filenames: false

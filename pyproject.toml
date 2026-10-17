@@ -1,0 +1,104 @@
+[project]
+name = "hydroforge"
+version = "0.1.0"
+description = "A Python library for preparing geospatial data for hydrological and hydraulic modelling workflows."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Andres Gonzalez Iniguez", email = "a.gonzalez.iniguez@gmail.com" },
+]
+keywords = [
+    "hydrology",
+    "hydraulics",
+    "hydraulic modelling",
+    "geospatial",
+    "GIS",
+    "data preparation",
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Topic :: Scientific/Engineering :: Hydrology",
+    "Typing :: Typed",
+]
+requires-python = ">=3.14"
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/agonzaleziniguez/hydroforge"
+Repository = "https://github.com/agonzaleziniguez/hydroforge"
+Issues = "https://github.com/agonzaleziniguez/hydroforge/issues"
+
+[build-system]
+requires = ["uv_build>=0.13.1,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.40.2",
+    "mdformat>=1.0.0",
+    "mdformat-gfm>=1.0.0",
+    "poethepoet>=0.49.0",
+    "pre-commit>=4.7.0",
+    "pytest>=9.1.1",
+    "ruff>=0.17.1",
+]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # import sorting
+    "B",   # bugbear
+    "UP",  # pyupgrade
+    "SIM", # simplifications
+    "RUF", # Ruff-specific rules
+    "D",   # pydocstyle
+    "PTH", # prefer pathlib
+    "PT",  # pytest style
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.basedpyright]
+include = ["src", "tests"]
+pythonVersion = "3.14"
+typeCheckingMode = "recommended"
+
+[tool.pytest]
+testpaths = ["tests"]
+strict = true
+addopts = ["-ra"]
+
+[tool.poe.tasks.check]
+help = "Auto-fix what can be fixed, then run all checks"
+sequence = [
+  "ruff check --fix",
+  "ruff format",
+  "mdformat .",
+  "uv lock --check",
+  "basedpyright",
+  "pytest",
+]
+default_item_type = "cmd"
+ignore_fail = "return_non_zero"

@@ -1,0 +1,9 @@
+wrap = "keep"
+exclude = [
+    ".git/**",
+    ".venv/**",
+    ".pytest_cache/**",
+    ".ruff_cache/**",
+    "build/**",
+    "dist/**",
+]
