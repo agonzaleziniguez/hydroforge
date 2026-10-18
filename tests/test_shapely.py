@@ -4,6 +4,10 @@ If one of these tests fails after a Shapely update, review the HydroForge code
 that depends on it.
 """
 
+# Shapely's type hints are partial. Ignore unknown types from its vectorized functions.
+# pyright: reportUnknownMemberType=false, reportUnknownArgumentType=false, reportUnknownVariableType=false, reportAny=false
+
+import numpy as np
 import pytest
 import shapely
 
@@ -94,3 +98,63 @@ def test_snap_does_not_move_vertices_onto_edge_middles() -> None:
     snapped = shapely.snap(moving, REFERENCE, TOLERANCE)
 
     assert snapped.equals_exact(moving, 0)
+
+
+def project(point: tuple[float, float], edges: shapely.Geometry) -> tuple[float, float]:
+    """Return the closest point of the edges, using the end of the shortest line."""
+    line = shapely.shortest_line(shapely.Point(point), edges)
+    x, y = shapely.get_coordinates(line)[1]
+    return float(x), float(y)
+
+
+def test_shortest_line_projects_onto_straight_edge_exactly() -> None:
+    assert project((10.5, 3), REFERENCE.boundary) == (10, 3)
+
+
+def test_shortest_line_projects_outside_corner_onto_the_corner() -> None:
+    assert project((10.4, 10.3), REFERENCE.boundary) == (10, 10)
+
+
+def test_shortest_line_projects_onto_slanted_edge_only_approximately() -> None:
+    """Points on a slanted edge often cannot be stored exactly.
+
+    The projected point is within 1e-9 of the edge, but not on it. HydroForge must
+    add these vertices to the reference so both edges match exactly.
+    """
+    x, y = 440000, 4470000
+    edge = shapely.LineString([(x, y), (x + 10, y + 3)])
+
+    end = shapely.Point(project((x + 5.2, y + 1), edge))
+
+    assert 0 < shapely.distance(end, edge) < 1e-9
+
+
+def test_get_and_set_coordinates_keep_rings_holes_and_parts() -> None:
+    with_hole = shapely.Polygon(
+        REFERENCE.exterior.coords, [shapely.box(2, 2, 4, 4).exterior.coords]
+    )
+    geometries = np.array(
+        [shapely.MultiPolygon([with_hole, shapely.box(20, 0, 30, 10)]), REFERENCE]
+    )
+    before = geometries.copy()
+
+    coordinates, index = shapely.get_coordinates(geometries, return_index=True)
+    result = shapely.set_coordinates(geometries.copy(), coordinates + 1)
+
+    assert index.tolist() == [0] * 15 + [1] * 5
+    for original, moved in zip(before, result, strict=True):
+        assert moved.equals_exact(shapely.affinity.translate(original, 1, 1), 0)
+    assert all(a is b for a, b in zip(geometries, before, strict=True))
+
+
+def test_set_coordinates_replaces_array_items_in_place() -> None:
+    """The geometries are not changed, but the array is. Pass a copy."""
+    geometries = np.array([REFERENCE])
+
+    result = shapely.set_coordinates(
+        geometries, shapely.get_coordinates(geometries) + 1
+    )
+
+    assert result is geometries
+    assert geometries[0].equals_exact(shapely.box(1, 1, 11, 11), 0)
+    assert REFERENCE.equals_exact(shapely.box(0, 0, 10, 10), 0)
