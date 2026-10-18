@@ -25,4 +25,4 @@ def test_landcover_runs_all_checks() -> None:
     problems = check_landcover(
         make_landcover("roads", "lakes"), AREA, ["roads"], min_area=2
     )
-    assert [problem.guarantee for problem in problems] == ["G6", "G6", "G8"]
+    assert [problem.guarantee for problem in problems] == ["G303", "G303", "G202"]

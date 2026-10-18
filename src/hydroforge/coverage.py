@@ -20,7 +20,7 @@ class Problem:
     Attributes
     ----------
     guarantee
-        The guarantee code, for example ``"G2"``.
+        The guarantee code, for example ``"G102"``.
     message
         A short description of the problem.
     geometry
@@ -51,7 +51,7 @@ def _to_rows(polygons: gpd.GeoSeries) -> list[tuple[Hashable, BaseGeometry | Non
 
 
 def check_valid_polygons(polygons: gpd.GeoSeries) -> list[Problem]:
-    """Check that every geometry is one valid, non-empty polygon (G7).
+    """Check that every geometry is one valid, non-empty polygon (G105).
 
     Parameters
     ----------
@@ -66,17 +66,17 @@ def check_valid_polygons(polygons: gpd.GeoSeries) -> list[Problem]:
     problems: list[Problem] = []
     for label, geometry in _to_rows(polygons):
         if geometry is None or geometry.is_empty:
-            problems.append(Problem("G7", f"Row {label} is empty."))
+            problems.append(Problem("G105", f"Row {label} is empty."))
         elif geometry.geom_type != "Polygon":
             message = f"Row {label} is a {geometry.geom_type}."
-            problems.append(Problem("G7", message, geometry))
+            problems.append(Problem("G105", message, geometry))
         elif not geometry.is_valid:
-            problems.append(Problem("G7", f"Row {label} is invalid.", geometry))
+            problems.append(Problem("G105", f"Row {label} is invalid.", geometry))
     return problems
 
 
 def check_no_gaps(polygons: gpd.GeoSeries, area: BaseGeometry) -> list[Problem]:
-    """Check that the polygons cover the whole area (G1).
+    """Check that the polygons cover the whole area (G101).
 
     Parameters
     ----------
@@ -93,11 +93,11 @@ def check_no_gaps(polygons: gpd.GeoSeries, area: BaseGeometry) -> list[Problem]:
     gaps = area.difference(polygons.union_all())
     if gaps.is_empty:
         return []
-    return [Problem("G1", "Part of the area is not covered.", gaps)]
+    return [Problem("G101", "Part of the area is not covered.", gaps)]
 
 
 def check_no_overlaps(polygons: gpd.GeoSeries) -> list[Problem]:
-    """Check that no two polygons overlap (G2).
+    """Check that no two polygons overlap (G102).
 
     Polygons that only touch along an edge do not overlap.
 
@@ -122,12 +122,12 @@ def check_no_overlaps(polygons: gpd.GeoSeries) -> list[Problem]:
         # "T********": the interiors intersect. Touching edges are fine.
         if a.relate_pattern(b, "T********"):
             message = f"Rows {label_a} and {label_b} overlap."
-            problems.append(Problem("G2", message, a.intersection(b)))
+            problems.append(Problem("G102", message, a.intersection(b)))
     return problems
 
 
 def check_shared_edges(polygons: gpd.GeoSeries) -> list[Problem]:
-    """Check that neighbours have the same vertices along shared edges (G4).
+    """Check that neighbours have the same vertices along shared edges (G103).
 
     Parameters
     ----------
@@ -146,14 +146,14 @@ def check_shared_edges(polygons: gpd.GeoSeries) -> list[Problem]:
     )
     edges = cast(list[BaseGeometry], invalid.tolist())
     return [
-        Problem("G4", f"Row {label} has edges that do not match.", edge)
+        Problem("G103", f"Row {label} has edges that do not match.", edge)
         for (label, _), edge in zip(rows, edges, strict=True)
         if not edge.is_empty
     ]
 
 
 def check_inside_area(polygons: gpd.GeoSeries, area: BaseGeometry) -> list[Problem]:
-    """Check that no polygon extends outside the area (G5).
+    """Check that no polygon extends outside the area (G104).
 
     Together with `check_no_gaps`, this means the outlines are the same.
 
@@ -172,11 +172,11 @@ def check_inside_area(polygons: gpd.GeoSeries, area: BaseGeometry) -> list[Probl
     outside = polygons.union_all().difference(area)
     if outside.is_empty:
         return []
-    return [Problem("G5", "Polygons extend outside the area.", outside)]
+    return [Problem("G104", "Polygons extend outside the area.", outside)]
 
 
 def check_min_area(polygons: gpd.GeoSeries, min_area: float) -> list[Problem]:
-    """Check that no polygon is smaller than a minimum area (G6).
+    """Check that no polygon is smaller than a minimum area (G303).
 
     Parameters
     ----------
@@ -191,7 +191,7 @@ def check_min_area(polygons: gpd.GeoSeries, min_area: float) -> list[Problem]:
         One problem for each polygon that is too small.
     """
     return [
-        Problem("G6", f"Row {label} is smaller than {min_area}.", geometry)
+        Problem("G303", f"Row {label} is smaller than {min_area}.", geometry)
         for label, geometry in _to_rows(polygons)
         if geometry is not None and geometry.area < min_area
     ]
@@ -202,7 +202,7 @@ def check_all(
 ) -> list[Problem]:
     """Run all checks in this module.
 
-    The other checks need valid polygons, so they run only if G7 passes.
+    The other checks need valid polygons, so they run only if G105 passes.
 
     Parameters
     ----------

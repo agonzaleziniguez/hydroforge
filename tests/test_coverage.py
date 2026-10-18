@@ -47,7 +47,7 @@ def test_valid_polygons() -> None:
 
 def test_no_gaps() -> None:
     problems = check_no_gaps(make_series(LEFT), AREA)
-    assert list_guarantees(problems) == ["G1"]
+    assert list_guarantees(problems) == ["G101"]
     assert problems[0].geometry is not None
     assert problems[0].geometry.equals(RIGHT)
 
@@ -56,14 +56,14 @@ def test_no_overlaps() -> None:
     assert check_no_overlaps(make_series(LEFT, RIGHT)) == []
 
     problems = check_no_overlaps(make_series(LEFT, box(0.5, 0, 2, 1)))
-    assert list_guarantees(problems) == ["G2"]
+    assert list_guarantees(problems) == ["G102"]
     assert problems[0].geometry is not None
     assert problems[0].geometry.equals(box(0.5, 0, 1, 1))
 
 
 def test_no_overlaps_finds_polygon_inside_another() -> None:
     problems = check_no_overlaps(make_series(AREA, box(0.2, 0.2, 0.8, 0.8)))
-    assert list_guarantees(problems) == ["G2"]
+    assert list_guarantees(problems) == ["G102"]
 
 
 def test_shared_edges() -> None:
@@ -71,14 +71,17 @@ def test_shared_edges() -> None:
 
     # RIGHT with an extra vertex at (1, 0.5) that LEFT does not have.
     right = Polygon([(1, 0), (2, 0), (2, 1), (1, 1), (1, 0.5)])
-    assert list_guarantees(check_shared_edges(make_series(LEFT, right))) == ["G4", "G4"]
+    assert list_guarantees(check_shared_edges(make_series(LEFT, right))) == [
+        "G103",
+        "G103",
+    ]
 
 
 def test_inside_area() -> None:
     assert check_inside_area(make_series(LEFT, RIGHT), AREA) == []
 
     problems = check_inside_area(make_series(LEFT, box(1, 0, 3, 1)), AREA)
-    assert list_guarantees(problems) == ["G5"]
+    assert list_guarantees(problems) == ["G104"]
     assert problems[0].geometry is not None
     assert problems[0].geometry.equals(box(2, 0, 3, 1))
 
@@ -86,11 +89,11 @@ def test_inside_area() -> None:
 def test_min_area() -> None:
     small = box(1, 0, 1.1, 1)
     problems = check_min_area(make_series(LEFT, small), min_area=0.5)
-    assert list_guarantees(problems) == ["G6"]
+    assert list_guarantees(problems) == ["G303"]
     assert problems[0].geometry == small
 
 
 def test_check_all_stops_after_invalid_polygons() -> None:
     assert list_guarantees(check_all(make_series(LEFT, None), AREA, min_area=0.5)) == [
-        "G7"
+        "G105"
     ]

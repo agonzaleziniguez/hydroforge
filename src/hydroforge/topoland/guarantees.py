@@ -1,6 +1,6 @@
 """Checks for the Topoland guarantees in `docs/specs/topoland.md`.
 
-G3 (priority) and G9 (repeatable) are checked in the tests, because they
+G201 (priority) and G401 (repeatable) are checked in the tests, because they
 need the inputs or a second run.
 """
 
@@ -20,7 +20,7 @@ CLASS_COLUMN = "class"
 def check_known_classes(
     landcover: gpd.GeoDataFrame, class_names: Iterable[str]
 ) -> list[Problem]:
-    """Check that every class is a layer name or ``unclassified`` (G8).
+    """Check that every class is a layer name or ``unclassified`` (G202).
 
     Parameters
     ----------
@@ -37,7 +37,7 @@ def check_known_classes(
     known = {*class_names, UNCLASSIFIED}
     classes = cast(list[str], landcover[CLASS_COLUMN].to_list())
     unknown = sorted(set(classes) - known)
-    return [Problem("G8", f"Unknown class {name!r}.") for name in unknown]
+    return [Problem("G202", f"Unknown class {name!r}.") for name in unknown]
 
 
 def check_landcover(
