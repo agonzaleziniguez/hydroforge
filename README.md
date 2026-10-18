@@ -2,6 +2,11 @@
 
 A Python library for preparing geospatial data for hydrological and hydraulic modelling workflows.
 
+## Specifications
+
+- [Topoland](docs/specs/topoland.md): builds one clean landcover map from several layers.
+- [Geometry operations](docs/specs/operations.md): the operations that workflows are built from.
+
 ## Development
 
 HydroForge requires Python 3.14 or newer and uses [uv](https://docs.astral.sh/uv/) to manage the environment and dependencies. Add or remove dependencies with `uv add` and `uv remove` rather than editing `pyproject.toml` by hand.
