@@ -64,12 +64,14 @@ Removes parts narrower than a width, such as tails, strips and narrow necks. It 
 
 ### Snap
 
-Moves the edges of polygons onto the edges of a reference, where they are closer than a distance.
+Moves the edges of polygons onto the edges of a reference, where they are at or closer than a distance.
 
-- Each vertex closer than the distance moves to the closest point of the reference edges. This can be a reference vertex or the middle of an edge.
+- Each vertex at or closer than the distance moves to the closest point of the reference edges. This can be a reference vertex or the middle of an edge.
 - Vertices are added where a reference vertex lies near an edge, so both edges match along their whole common length.
-- No point moves more than the distance.
-- Argument: distance.
+- An allowance of 1 mm, given in map units, is added to the distance. This makes sure that vertices at exactly the distance also snap.
+- No point moves more than the distance plus the allowance.
+- The output is not repaired. This is an exception to rule 2: an invalid output shows that snapping went wrong, so the caller checks it.
+- Arguments: distance, allowance.
 
 The reference can be other polygons or an outline. Snapping polygons to themselves is not defined yet.
 
