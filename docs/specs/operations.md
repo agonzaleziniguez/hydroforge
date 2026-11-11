@@ -8,13 +8,13 @@ Workflows, for example [Topoland](topoland.md), decide which operations to use, 
 
 ## 1. Words
 
-| Word      | Meaning                                                                   |
-| --------- | ------------------------------------------------------------------------- |
-| Map units | The units of the coordinate reference system (CRS), usually metres.       |
-| Coverage  | Polygons that do not overlap and share exact edges with their neighbours. |
-| Outline   | The outer boundary of a set of polygons, for example of a coverage.       |
-| Reference | Geometry that an operation fits other geometry to. It never moves.        |
-| Class     | A value that groups polygons, for example a landcover type.               |
+| Word      | Meaning                                                                                                                                                                    |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Map units | The units of the coordinate reference system (CRS), usually metres.                                                                                                        |
+| Coverage  | Polygons that do not overlap and share exact edges with their neighbours.                                                                                                  |
+| Outline   | The outer boundary of a set of polygons, for example of a coverage.                                                                                                        |
+| Reference | Geometry that an operation fits other geometry to. Its shape stays the same, except for small changes within the tolerance of [Add shared vertices](#add-shared-vertices). |
+| Class     | A value that groups polygons, for example a landcover type.                                                                                                                |
 
 All distances are in map units, and all areas in square map units.
 
@@ -83,7 +83,9 @@ Removes from polygons the area covered by a reference.
 
 Adds to each polygon the vertices of its neighbours that lie on its edges, so that neighbours have the same vertices along their common edges. No vertex moves.
 
-This is needed after snap and cut: the snapped polygons get new vertices that the reference does not have yet.
+- A vertex counts as on an edge if it is at or closer than a tolerance to it. Points on slanted edges often cannot be stored exactly, so a snapped vertex can lie a tiny distance off the edge. Adding it bends the edge by at most the tolerance.
+- Argument: tolerance. It should be tiny, for example 1e-6 m, so that only vertices that should be on the edge are added.
+- This is needed after snap and cut: the snapped polygons get new vertices that the reference does not have yet.
 
 ### Simplify
 
